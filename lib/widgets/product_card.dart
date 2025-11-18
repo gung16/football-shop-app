@@ -57,7 +57,12 @@ class ItemCard extends StatelessWidget {
                 ),
             );
           } else if (item.name == "My Products") {
-            // Do nothing or add logout logic
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProductEntryListPage(showMyProductsOnly: true),
+              ),
+            );
           }
           // Add this after your previous if statements
           else if (item.name == "Logout") {

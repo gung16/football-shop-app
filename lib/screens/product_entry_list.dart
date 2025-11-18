@@ -7,7 +7,9 @@ import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 
 class ProductEntryListPage extends StatefulWidget {
-  const ProductEntryListPage({super.key});
+  final bool showMyProductsOnly;
+
+  const ProductEntryListPage({super.key, this.showMyProductsOnly = false});
 
   @override
   State<ProductEntryListPage> createState() => _ProductEntryListPageState();
@@ -18,12 +20,18 @@ class _ProductEntryListPageState extends State<ProductEntryListPage> {
     // TODO: Replace the URL with your app's URL and don't forget to add a trailing slash (/)!
     // To connect Android emulator with Django on localhost, use URL http://10.0.2.2/
     // If you using chrome,  use URL http://localhost:8000
-    
-    final response = await request.get('http://localhost:8000/json/');
-    
+
+    // Add filter parameter if showing only user's products
+    String url = 'http://localhost:8000/json/';
+    if (widget.showMyProductsOnly) {
+      url += '?filter=my';
+    }
+
+    final response = await request.get(url);
+
     // Decode response to json format
     var data = response;
-    
+
     // Convert json data to ProductEntry objects
     List<ProductEntry> listProduct = [];
     for (var d in data) {
@@ -39,7 +47,7 @@ class _ProductEntryListPageState extends State<ProductEntryListPage> {
     final request = context.watch<CookieRequest>();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gung\'s Padel Shop - Products'),
+        title: Text(widget.showMyProductsOnly ? 'Gung\'s Padel Shop - My Products' : 'Gung\'s Padel Shop - Products'),
       ),
       drawer: const LeftDrawer(),
       body: FutureBuilder(
