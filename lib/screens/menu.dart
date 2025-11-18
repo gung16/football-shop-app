@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:football_shop/widgets/left_drawer.dart';
-import 'package:football_shop/widgets/shop_card.dart';
+import 'package:football_shop/widgets/product_card.dart';
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({super.key});
@@ -16,14 +16,11 @@ class MyHomePage extends StatelessWidget {
       // AppBar adalah bagian atas halaman yang menampilkan judul.
       appBar: AppBar(
         title: const Text(
-          'Football shop',
+          'Gung\'s Padel Shop',
           style: TextStyle(
-            color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
-        // Warna latar belakang AppBar diambil dari skema warna tema aplikasi.
-        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
         drawer: LeftDrawer(),
       // Body halaman dengan padding di sekelilingnya.

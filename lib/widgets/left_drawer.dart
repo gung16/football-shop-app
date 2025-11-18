@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:football_shop/screens/menu.dart';
-import 'package:football_shop/screens/shoplist_form.dart';
+import 'package:football_shop/screens/productlist_form.dart';
+import 'package:football_shop/screens/product_entry_list.dart';
 
 
 class LeftDrawer extends StatelessWidget {
@@ -12,18 +13,14 @@ class LeftDrawer extends StatelessWidget {
       child: ListView(
         children: [
           const DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-            ),
             child: Column(
               children: [
                 Text(
-                  'Football Shop',
+                  'Gung\'s Padel Shop',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
                   ),
                 ),
                 Padding(padding: EdgeInsets.all(10)),
@@ -32,7 +29,6 @@ class LeftDrawer extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                   fontSize: 15,
-                  color: Colors.white,
                   fontWeight: FontWeight.normal,
                   ),
                 ),
@@ -60,10 +56,21 @@ class LeftDrawer extends StatelessWidget {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                builder: (context) => ShopFormPage(),
+                builder: (context) => ProductFormPage(),
                 ));
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.add_reaction_rounded),
+            title: const Text('Product List'),
+            onTap: () {
+                // Route to product list page
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProductEntryListPage()),
+                );
+            },
+        ),
         ],
       ),
     );

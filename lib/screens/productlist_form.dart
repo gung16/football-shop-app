@@ -1,40 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:football_shop/widgets/left_drawer.dart';
+import 'dart:convert';
+import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:football_shop/screens/menu.dart';
 
-class ShopFormPage extends StatefulWidget {
-    const ShopFormPage({super.key});
+class ProductFormPage extends StatefulWidget {
+    const ProductFormPage({super.key});
 
     @override
-    State<ShopFormPage> createState() => _ShopFormPageState();
+    State<ProductFormPage> createState() => _ProductFormPageState();
 }
 
-class _ShopFormPageState extends State<ShopFormPage> {
+class _ProductFormPageState extends State<ProductFormPage> {
   final _formKey = GlobalKey<FormState>();
     String _name = "";
     int _price = 0;
     String _description = "";
     String _brand = "";
-    String _category = "Footwear"; // default
+    String _category = "racket"; // default
     String _thumbnail = "";
     bool _isFeatured = false; // default
+    int _weight = 0; // default weight
 
     final List<String> _categories = [
-      'Footwear',
-      'Apparel',
-      'Equipment',
+      'racket',
+      'shoes',
+      'accesories',
+      'bags',
+      'balls',
     ];
 
     @override
     Widget build(BuildContext context) {
+        final request = context.watch<CookieRequest>();
         return Scaffold(
           appBar: AppBar(
             title: const Center(
               child: Text(
-                'Create Product Form',
+                'Create Product',
               ),
             ),
-            backgroundColor: Colors.indigo,
-            foregroundColor: Colors.white,
           ),
           drawer: LeftDrawer(),
           body: Form(
@@ -238,55 +244,48 @@ class _ShopFormPageState extends State<ShopFormPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all(Colors.indigo),
-                  ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: const Text('Product saved successfully'),
-                            content: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                children: [
-                                  Text('Name: $_name'),
-                                    Text('Price: $_price'),
-                                    Text('Description: $_description'),
-                                    Text('Brand: $_brand'),
-                                    Text('Category: $_category'),
-                                    Text('Thumbnail: $_thumbnail'),
-                                    Text(
-                                        'Featured: ${_isFeatured ? "Yes" : "No"}'),
-                                ],
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                child: const Text('OK'),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  _formKey.currentState!.reset();
-                                  setState(() {
-                                    _name = "";
-                                    _price = 0;
-                                    _description = "";
-                                    _brand = "";
-                                    _category = "Footwear";
-                                    _thumbnail = "";
-                                    _isFeatured = false;
-                                  });
-                                },
-                              ),
-                            ],
-                          );
-                        },
+                      // 1. Determine the correct URL based on your development environment.
+                      // Replace "[Your_APP_URL]" with your actual domain or IP address.
+                      
+                      final response = await request.postJson(
+                        "http://localhost:8000/create-flutter/", // ⬅️ **UPDATED URL PATH**
+                        jsonEncode({
+                          // 2. Updated fields to match the ProductEntry model and Django view:
+                          "name": _name, // Changed from "title"
+                          "price": _price, // New required field (assuming it's an int)
+                          "description": _description, // Changed from "content"
+                          "category": _category,
+                          "thumbnail": _thumbnail,
+                          "is_featured": _isFeatured,
+                          "brand": _brand, // New field
+                          "weight": _weight, // New field (assuming it's an int)
+                          // Fields like id, product_views, created_at, user_id, rating are generated server-side.
+                        }),
                       );
-                  
+                      
+                      // 3. Handle the server response
+                      if (context.mounted) {
+                        if (response['status'] == 'success') {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text("Product Successfully Created!"), // ⬅️ Updated message
+                          ));
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MyHomePage()),
+                          );
+                        } else {
+                          // You might want to display the specific error message from Django if possible
+                          String errorMessage = response['message'] ?? "Something went wrong, please try again.";
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(SnackBar(
+                            content: Text(errorMessage),
+                          ));
+                        }
+                      }
                     }
                   },
                   child: const Text(
